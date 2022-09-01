@@ -4,37 +4,41 @@ canvas.width = 1920
 canvas.height = 1024
 const gameOver = document.querySelector('#overGame')
 const heartCount = document.querySelector('#heart')
+const moneyCount = document.querySelector('#money')
 const ctx = canvas.getContext('2d')
 const image = new Image()
 let heart = 10
+let initMoney = 200
+
+let hahahihi = 1000
 const listHome = [
     {
-        name: 'option1',
+        name: 'option3',
         basixDame: 200,
-        money : 5,
-        radius: 40
+        money: 5,
+        radius: 250
     },
     {
-        name: 'option1',
+        name: 'option2',
         basixDame: 300,
-        money : 7,
-        radius: 50
+        money: 7,
+        radius: 500
     },
     {
         name: 'option1',
-        basixDame: 450,
-        money : 15,
-        radius: 100
+        basixDame: 600,
+        money: 15,
+        radius: 450
     }
 ]
-let initMoney = 20
 let mousemove = {
     x: '',
     y: ''
 }
 image.src = 'src/img/gameMap.png'
 const placementTiles = hanleLocationDataBuilding()
-let enemyes = spawnEnemies(10, 100, 10, 40, 'blue', 5000, 20)
+let enemyes = spawnEnemies(4, 100, 10, 40, 'blue', 2000, 2, 5)
+console.log(enemyes)
 const buildings = []
 
 
@@ -61,21 +65,29 @@ function animate() {
             return distance(building, enemy) < enemy.radius + building.radius
         })
         building.target = validEnemies[0]
+
         // xác định khi  đạn và đối tượng chạm vào nhau
         for (let i = 0; i < building.projectiles.length; i++) {
             const projectile = building.projectiles[i]
+
             projectile.update()
             if (distance(projectile.enemy, projectile) < projectile.enemy.radius + projectile.radius) {
-                building.projectiles.splice(i, 1)
                 projectile.enemy.takeDamage += (100 / (projectile.enemy.health / projectile.initDame))
+                building.projectiles.splice(i, 1)
+
                 if (projectile.enemy.takeDamage >= 100) {
-                    projectile.enemy.takeDamage = 100
                     let indexEnemy = enemyes.findIndex((value) => {
                         return projectile.enemy === value
                     })
-                    enemyes.splice(indexEnemy, 1)
+                    if (indexEnemy > -1) {
+                        enemyes.splice(indexEnemy, 1)
+                    }
+
+                    initMoney += projectile.enemy.money
+                    moneyCount.innerHTML = ` ${initMoney}`
+                    projectile.enemy.takeDamage = 100
                     if (enemyes.length === 0) {
-                        enemyes = spawnEnemies(10, 100, 10, 40, 'blue', 5000, 10)
+                        enemyes = spawnEnemies(10, 100, 10, 40, 'blue', hahahihi += 1000, 6, 5)
                     }
                 }
             }
@@ -95,8 +107,12 @@ function animate() {
                 gameOver.style = ' display: flex;'
                 cancelAnimationFrame(animationFrame)
             }
+            if (enemyes.length === 0) {
+                enemyes = spawnEnemies(10, 100, 10, 40, 'blue', hahahihi += 500, 6, 3)
+            }
         }
     })
+
 }
 
 //handle function
@@ -114,7 +130,8 @@ function hanleLocationDataBuilding() {
     return data
 }
 
-function spawnEnemies(enemy, width, height, radius, color, health, speed) {
+
+function spawnEnemies(enemy, width, height, radius, color, health, speed, money) {
     const waypoint = waypoints_Enemi[0]
     let enemyesArray = []
     let distance = 150
@@ -122,7 +139,7 @@ function spawnEnemies(enemy, width, height, radius, color, health, speed) {
         enemyesArray.push(new Enemy({
             x: waypoint.x - (distance * i),
             y: waypoint.y
-        }, width, height, radius, color, health, speed))
+        }, width, height, radius, color, health + i, speed, money))
     }
     return enemyesArray
 }
@@ -144,11 +161,11 @@ function distance(object1, object2) {
     return Math.hypot(xDistance, yDistance)
 
 }
+
 function optionHome(key) {
     return listHome.find(value => value.name === key)
 }
 
-console.log(optionHome('option1'))
 // sử lý sự kiện window
 window.addEventListener('mousemove', handleMousemoveCanvas)
 window.addEventListener('click', handleClickCanvas)
@@ -185,13 +202,19 @@ function handleClickCanvas() {
             mousemove.y >= placementTile.position.y &&
             mousemove.y <= placementTile.position.y + placementTile.size
         ) {
-            if (!placementTile.check && initMoney) {
-
+            // chua hoan thien chon enemy
+            let item = optionHome('option2')
+            if (!placementTile.check && (initMoney >= item.money)) {
+                initMoney -= item.money
                 placementTile.check = true
+                moneyCount.innerHTML = ` ${initMoney}`
+                if (initMoney < 10) {
+                    moneyCount.innerHTML = '  ' + ` 0${initMoney}`
+                }
                 buildings.push(new Building({
                     x: placementTile.position.x,
                     y: placementTile.position.y
-                }, (placementTile.size * 2), placementTile.size, 250, 'red', 300, 5))
+                }, (placementTile.size * 2), placementTile.size, item.radius, 'red', item.basixDame, item.money))
             }
         }
     })

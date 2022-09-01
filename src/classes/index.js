@@ -1,5 +1,5 @@
 class Enemy {
-    constructor(position, width, height, radius, color, health, speed) {
+    constructor(position, width, height, radius, color, health, speed, money) {
         this.position = position;
         this.width = width;
         this.height = height;
@@ -8,6 +8,8 @@ class Enemy {
         this.health = health;
         this.takeDamage = 0
         this.speed = speed;
+        this.money = money
+        this.on= true
         this.velocity = {
             x: 0,
             y: 0
@@ -83,7 +85,7 @@ class PlacementTile {
 
 
 class Building {
-    constructor(position, width, height, radius, color, basixDame,money) {
+    constructor(position, width, height, radius, color, basixDame, money) {
         this.position = position
         this.width = width;
         this.height = height;
@@ -93,7 +95,7 @@ class Building {
         this.basixDame = basixDame
         this.target = null;
         this.frames = 0
-        this.money= money
+        this.money = money
         this.center = {
             x: 0,
             y: 0
@@ -116,7 +118,7 @@ class Building {
         this.darw()
         this.center.x = this.position.x + this.width / 2
         this.center.y = this.position.y + this.height / 2
-        if (this.frames % 100 === 0 && this.target) {
+        if (this.frames % 50 === 0 && this.target) {
             this.projectiles.push(
                 new Projectile(
                     {x: this.center.x, y: this.center.y},
@@ -151,7 +153,7 @@ class Projectile {
     }
 
     update() {
-        this.speed += 0.1
+        this.speed += 0.01
         this.draw()
         const xDistance = this.enemy.position.x - this.position.x
         const yDistance = this.enemy.position.y - this.position.y
