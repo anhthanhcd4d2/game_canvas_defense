@@ -1,0 +1,210 @@
+- tính va chạm hình tròn giữa 2 hình tròn :
+
+function distance (toadoX1, toadoY1, toadoX2, toadoY2) {
+    let xDistance = toadoX2 - toadoX1
+    let yDistance = toadoY2 - toadoY1
+    return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2))  
+}
+
+-vẽ hình chỉ vẽ viền  c.stroke();
+-vẽ hình vẽ đặc bên trong c.fill();
+- bắt đầu  vẽ hình mới : c.beginPath()
+-requestAnimationFrame lặp lại animation 60 lan / phút
+- clearRect(x,y,width,height)  làm sạch canvas
+- vẽ hình tròn arc(this._x, this._y, this._r, 0, 2 * Math.PI, false)
+
+-----------------------------------------------------------------------------------
+
+// click di chuyen muc tieu
+
+window.addEventListener('mousedown', (e) => {
+    if (
+        e.x <= a.x + a.r &&
+        e.x >= a.x - a.r &&
+        e.y <= a.y + a.r &&
+        e.y >= a.y - a.r
+    ) {
+        window.addEventListener('mousemove', moveCircle)
+    }
+})
+
+
+window.addEventListener('mouseup', () => {
+    window.removeEventListener('mousemove', moveCircle)
+})
+
+function moveCircle(e) {
+    a.x = e.x
+    a.y = e.y
+    if (distance(a.x, a.y, b.x, b.y) < 50) {
+        b.color = 'red'
+        console.log('va chạm')
+    } else {
+        b.color = 'black'
+    }
+}
+
+-----------------------------------------------------------------------------------
+
+//   vẽ  hình tròng luôn trong canvas
+ let x = Math.random() * (canvas.clientWidth - r)
+ let y = Math.random() * (canvas.clientHeight - r)
+ làm cho không bao giờ trong tọa độ x,y 
+
+    for (let i = 0; i < 9; i++) {
+        let x = Math.random() * (canvas.clientWidth - r)
+        let y = Math.random() * (canvas.clientHeight - r)
+        let color = colors[Math.floor(Math.random() * 4)]
+        let dx = Math.random() * 4
+        for (let j = 0; j < array.length; j++) {
+            if (distance(x, y, array[j].x, array[j].y) - r * 2 < 0) { //distance là hàm tính tọa độ va chạm hình tròn
+                console.log('vao')
+                 x = Math.random() * (canvas.clientWidth - r)
+                 y = Math.random() * (canvas.clientHeight - r)
+                j=-1
+            }
+			
+            if (x - r <= 0) // tránh bị max ở màn hình
+		{ 
+                x = Math.random() * (canvas.clientWidth - r)
+            }
+        }
+        array.push(new Main(x, y, r, color, dx, dy, tl))
+    }
+-----------------------------------------------------------------------------------
+
+
+- va cham nhiều hình 
+        for (let i = 0; i < array.length; i++) {
+            if (this === array[i]) continue
+            if (distance(this.x, this.y, array[i].x, array[i].y) - (this.r * 2) < 0) {
+                console.log('va cham')
+            }
+        }
+
+-----------------------------------------------------------------------------------
+
+đảm bảo  tọa độ lằm trong canvas
+        if (
+            this.x + this.r >= canvas.offsetWidth ||
+            this.x - this.r <= 0
+        ) {
+            this.dx = -this.dx
+        }
+        if (this.x +this.r>= canvas.width){
+            this.x = canvas.width - this.r
+        }
+        if (this.x - this.r < 0){
+            this.x = this.r
+        }
+        if (this.y - this.r <= 0){
+            this.y = this.r
+        }
+        if (this.y + this.r >= canvas.offsetHeight){
+            this.y = canvas.offsetHeight-this.r
+        }
+
+8
+
+-----------------------------------------------------------------------------------
+
+//  hướng dẫn quái vật chạy theo tọa độ chỉ định :
+
+class Enemy {
+    constructor(position, width, height, color) {
+        this.position = position
+        this.color = color
+        this.width = width
+        this.height = height
+        this.waypointIndex = 0
+        this.center = {
+            x: this.position.x + this.width / 2,
+            y: this.position.y + this.height / 2
+        }
+    }
+
+    draw() {
+        c.beginPath()
+        c.fillStyle = this.color
+        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        c.fill()
+        c.closePath()
+    }
+
+    update() {
+        this.draw()
+        const waypoint = waypoints[this.waypointIndex]
+        const yDistance = waypoint.y - this.center.y
+        const xDistance = waypoint.x - this.center.x
+        const angle = Math.atan2(yDistance, xDistance)
+        this.position.x += Math.cos(angle)
+        this.position.y += Math.sin(angle)
+        console.log(waypoints.length)
+        this.center = {
+            x: this.position.x + this.width / 2,
+            y: this.position.y + this.height / 2
+        }
+        // console.log(Math.round(this.position.x) === Math.round(waypoint.x))
+        if (
+            Math.floor(this.center.x) === Math.floor(waypoint.x) &&
+            Math.floor(this.center.y) === Math.floor(waypoint.y) &&
+            this.waypointIndex < waypoints.length - 1
+        ) {
+            this.waypointIndex++
+        }
+    }
+}
+	chú ý : waypoints là array chúa tọa độ  đến 
+		  waypointIndex : là vị trí  phần tử trong array 
+
+-----------------------------------------------------------------------------------
+// cách lấy mục tiêu  giữa tháp bắn và enemy
+
+        building.target=null
+
+        const validEnemies = enemyes.filter(enemy => {
+            return distance(building,enemy) < enemy.radius + building.radius
+        })
+        console.log(validEnemies)
+
+-----------------------------------------------------------------------------------
+
+//cách vẽ đạn và khoảng cách đạn 
+
+    update() {
+        this.darw()
+        this.center.x = this.position.x + this.width / 2
+        this.center.y = this.position.y + this.height / 2
+        if (this.frames % 100 === 0 && this.target) {
+            this.projectiles.push(
+                new Projectile(
+                    {x: this.center.x, y: this.center.y},
+                    this.target, 'black', 15, 5)
+            )
+        }
+        this.frames++
+
+-----------------------------------------------------------------------------------
+
+        //xác định  mục tiêu vào  vùng công kick
+    buildings.forEach(building => {
+        building.update()
+        
+        // xác định mục tiêu vào vùng công kick
+        const validEnemies = enemyes.filter(enemy => {
+            return distance(building, enemy) < enemy.radius + building.radius
+        })
+        
+            
+        building.target = validEnemies[0]
+        // xác định khi  đạn và đối tượng chạm vào nhau
+        for (let i = 0; i < building.projectiles.length; i++) {
+            const projectile = building.projectiles[i]
+            projectile.update()
+            if (distance(projectile.enemy, projectile) < projectile.enemy.radius + projectile.radius) {
+                // sử lý khi đạn đến trung tâm mục tiêu
+            }
+        }
+
+    })
+
